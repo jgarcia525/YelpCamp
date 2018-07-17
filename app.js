@@ -8,6 +8,9 @@ app.set("view engine", "ejs");
 var campgrounds = [
 	{name: "Salmon Creek", image: "https://photosforclass.com/download/flickr-882244782"},
 	{name: "Granite Hill", image: "https://photosforclass.com/download/flickr-5641024448"},
+	{name: "Moutain Goat's Rest", image: "https://photosforclass.com/download/flickr-8050540841"},
+	{name: "Salmon Creek", image: "https://photosforclass.com/download/flickr-882244782"},
+	{name: "Granite Hill", image: "https://photosforclass.com/download/flickr-5641024448"},
 	{name: "Moutain Goat's Rest", image: "https://photosforclass.com/download/flickr-8050540841"}
 ];
 
