@@ -1,21 +1,26 @@
-var express 		= require("express"),
-		app 				= express(),
+var Campground  = require("./models/campground"),
 		bodyParser 	= require("body-parser"),
 		mongoose		= require("mongoose"),
-		Campground  = require("./models/campground");
+		seedDB 			= require("./seeds"),
+		express 		= require("express"),
+		app 				= express();
 
-// Connects to MongoDB database
+// App configuration
 mongoose.connect("mongodb://localhost/yelp_camp");
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
+// Delete all campgrounds in the database and populate it
+// with sample data		
+seedDB();
 
+
+// Example code to make new campground
 
 // var newCampground = {
-// 	name: "Granite Hill", 
-// 	image: "https://images.unsplash.com/photo-1506535995048-638aa1b62b77?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=f3e3ff1cce6d43ff22a50a83269f07ac&auto=format&fit=crop&w=1950&q=80",
-// 	description: "This is a huge granite hill, no bathrooms. No water. Beautiful granite!"
+//  name: "Granite Hill", 
+//  image: "",
+//  description: "This is a huge granite hill, no bathrooms. No water. Beautiful granite!"
 // };
 
 // Campground.create(newCampground, function(err, campground) {
@@ -28,14 +33,6 @@ app.set("view engine", "ejs");
 // 		}
 // });
 
-// var campgrounds = [
-// 	{name: "Salmon Creek", image: "https://photosforclass.com/download/flickr-882244782"},
-// 	{name: "Granite Hill", image: "https://photosforclass.com/download/flickr-5641024448"},
-// 	{name: "Moutain Goat's Rest", image: "https://photosforclass.com/download/flickr-8050540841"},
-// 	{name: "Salmon Creek", image: "https://photosforclass.com/download/flickr-882244782"},
-// 	{name: "Granite Hill", image: "https://photosforclass.com/download/flickr-5641024448"},
-// 	{name: "Moutain Goat's Rest", image: "https://photosforclass.com/download/flickr-8050540841"}
-// ];
 
 // 
 app.get("/", function(req, res) {
@@ -54,7 +51,7 @@ app.get("/campgrounds", function(req, res) {
 	})
 });
 
-// CREATE -  add new campgrounds
+// CREATE - add new campgrounds
 app.post("/campgrounds", function(req, res) {
 	// get data from form and add to campgrounds array
 	var name = req.body.name;
@@ -82,7 +79,7 @@ app.get("/campgrounds/new", function(req, res) {
 // SHOW - show more info about one campground
 app.get("/campgrounds/:id", function(req, res) {
 	// find the campground with provided ID
-	Campground.findById(req.params.id, function(err, foundCampground) {
+	Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground) {
 		if(err) {
 			console.log(err);
 		} else {
