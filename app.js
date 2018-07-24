@@ -1,7 +1,8 @@
 var express 		= require("express"),
-		app 				= express();
+		app 				= express(),
 		bodyParser 	= require("body-parser"),
-		mongoose		= require("mongoose");
+		mongoose		= require("mongoose"),
+		Campground  = require("./models/campground");
 
 // Connects to MongoDB database
 mongoose.connect("mongodb://localhost/yelp_camp");
@@ -9,15 +10,7 @@ mongoose.connect("mongodb://localhost/yelp_camp");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-// Schema Setup for MongoDB
-var campgroundSchema = new mongoose.Schema({
-	name: String,
-	image: String,
-	description: String
-});
 
-// Compile Schema into model
-var Campground = mongoose.model("Campground", campgroundSchema);
 
 // var newCampground = {
 // 	name: "Granite Hill", 
@@ -67,7 +60,7 @@ app.post("/campgrounds", function(req, res) {
 	var name = req.body.name;
 	var image = req.body.image;
 	var desc = req.body.description;
-	var newCampground = {name: name, image: image, description: desc}
+	var newCampground = {name: name, image: image, description: descs}
 	// create a new campground and save to DB
 	Campground.create(newCampground, function(err, campground) {
 		if(err) {
@@ -100,5 +93,5 @@ app.get("/campgrounds/:id", function(req, res) {
 })
 
 app.listen(3000, function() {
-	console.log("Yelp Camp Sever Has Started!");
+	console.log("YelpCamp Sever Has Started.");
 });
