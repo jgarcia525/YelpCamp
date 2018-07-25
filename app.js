@@ -135,16 +135,16 @@ app.post("/campgrounds/:id/comments", function(req, res) {
 	});	
 });
 
-// ======================= //
-//  Authentication Routes  //
-// ======================= //
+// ================= //
+//  Register Routes  //
+// ================= //
 
-// NEW - show register form
+// show register form
 app.get("/register", function(req, res) {
 	res.render("register");
 });
 
-// CREATE - handle sign up logic
+// handle sign up logic
 app.post("/register", function(req, res) {
 	var newUser = new User({username: req.body.username});
 	User.register(newUser, req.body.password, function(err, user) {
@@ -158,7 +158,22 @@ app.post("/register", function(req, res) {
 	});
 });
 
+// ============== //
+//  Login Routes  //
+// ============== //
 
+// show login info
+app.get("/login", function(req, res) {
+	res.render("login");
+});
+
+// hanlding login logic
+app.post("/login", passport.authenticate("local", 
+	{
+		successRedirect: "/campgrounds",
+		failureRedirect: "/login"
+	}), function(req, res) {
+});
 
 
 app.listen(3000, function() {
