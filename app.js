@@ -1,10 +1,14 @@
-var Campground  = require("./models/campground"),
-		Comment 		= require("./models/comment"),
-		bodyParser 	= require("body-parser"),
-		mongoose		= require("mongoose"),
-		seedDB 			= require("./seeds"),
-		express 		= require("express"),
-		app 				= express();
+var	express 			= require("express"),
+		app 					= express(),
+		bodyParser 		= require("body-parser"),
+		mongoose			= require("mongoose"),
+		passport 			= require("passport"),
+		LocalStrategy = require("passport-local"),
+		Campground  	= require("./models/campground"),
+		Comment 			= require("./models/comment"),
+		User					= require("./models/user"),
+		seedDB 				= require("./seeds");
+		
 
 // App configuration
 mongoose.connect("mongodb://localhost/yelp_camp");
@@ -16,27 +20,22 @@ app.use(express.static(__dirname + "/public"));
 // with sample data		
 seedDB();
 
+// Passport configuration
+app.use(require("express-session")({
+	secret: "Once again Rusty wins cutest dog!",
+	resave: false,
+	saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-// Example code to make new campground
+// ==================== //
+//  Landing Page Route  //
+// ==================== //
 
-// var newCampground = {
-//  name: "Granite Hill", 
-//  image: "",
-//  description: "This is a huge granite hill, no bathrooms. No water. Beautiful granite!"
-// };
-
-// Campground.create(newCampground, function(err, campground) {
-// 		if(err) {
-// 			console.log(err);
-// 		} else {
-// 			// redirect back to campgrounds page, if it was 
-// 			// successfully added
-// 			console.log("NEWLY CREATED CAMPGROUND");
-// 		}
-// });
-
-
-// Landing page
 app.get("/", function(req, res) {
 	res.render("landing")
 });
@@ -58,7 +57,12 @@ app.get("/campgrounds", function(req, res) {
 	})
 });
 
-// CREATE - add new campgrounds
+// NEW - show form to create new campground
+app.get("/campgrounds/new", function(req, res) {
+	res.render("campgrounds/new");
+});
+
+// CREATE - add new campground
 app.post("/campgrounds", function(req, res) {
 	// get data from form and add to campgrounds array
 	var name = req.body.name;
@@ -75,11 +79,6 @@ app.post("/campgrounds", function(req, res) {
 			res.redirect("/campgrounds");
 		}
 	});
-});
-
-// NEW - show form to create new campground
-app.get("/campgrounds/new", function(req, res) {
-	res.render("campgrounds/new");
 });
 
 
@@ -100,6 +99,7 @@ app.get("/campgrounds/:id", function(req, res) {
 //  Comments Routes  //
 // ================= //
 
+// NEW - show form to create new commeet
 app.get("/campgrounds/:id/comments/new", function(req, res) {
 	// find campground by id
 	Campground.findById(req.params.id, function(err, campground) {
@@ -111,6 +111,7 @@ app.get("/campgrounds/:id/comments/new", function(req, res) {
 	});
 });
 
+// CREATE - add new comment
 app.post("/campgrounds/:id/comments", function(req, res) {
 	// lookup campground using ID
 	Campground.findById(req.params.id, function(err, campground) {
@@ -123,7 +124,7 @@ app.post("/campgrounds/:id/comments", function(req, res) {
 				if(err) {
 					console.log(err);
 				} else {
-					// connect new commnet to campground
+					// connect new comment to campground
 					campground.comments.push(comment);
 					campground.save();
 					// redirect to campground show page
@@ -133,6 +134,32 @@ app.post("/campgrounds/:id/comments", function(req, res) {
 		}
 	});	
 });
+
+// ======================= //
+//  Authentication Routes  //
+// ======================= //
+
+// NEW - show register form
+app.get("/register", function(req, res) {
+	res.render("register");
+});
+
+// CREATE - handle sign up logic
+app.post("/register", function(req, res) {
+	var newUser = new User({username: req.body.username});
+	User.register(newUser, req.body.password, function(err, user) {
+		if(err) {
+			console.log(err);
+			return res.render("register");
+		}
+		passport.authenticate("local")(req, res, function() {
+			res.redirect("/campgrounds");
+		});
+	});
+});
+
+
+
 
 app.listen(3000, function() {
 	console.log("YelpCamp Sever Has Started.");
