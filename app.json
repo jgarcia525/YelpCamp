@@ -1,0 +1,21 @@
+{
+  "name": "YelpCamp",
+  "scripts": {
+  },
+  "env": {
+    "DATABASEURL": "mongodb://jorge:dkfu43hd84adcwq@ds115022.mlab.com:15022/yelp-camp"
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
