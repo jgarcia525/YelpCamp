@@ -16,6 +16,11 @@ var commentRoutes 	 = require("./routes/comments"),
 		campgroundRoutes = require("./routes/campgrounds"),
 		indexRoutes			 = require("./routes/index");
 
+// set the port of our application
+// process.env.PORT lets the port to be set by Heroku
+var port = process.env.PORT || 3000;
+
+
 // App configuration
 mongoose.connect("mongodb://localhost/yelp_camp");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -52,6 +57,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds", campgroundRoutes);
 
-app.listen(3000, function() {
+app.listen(port, function() {
 	console.log("YelpCamp Sever Has Started.");
 });
