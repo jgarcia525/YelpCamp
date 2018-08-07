@@ -21,8 +21,9 @@ var commentRoutes 	 = require("./routes/comments"),
 var port = process.env.PORT || 3000;
 
 // App configuration
-var url = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
-mongoose.connect(process.env.DATABASEURL);
+// ran this in command line -> export DATABASEURL=mongodb://localhost:27017/yelp_camp
+var url = process.env.DATABASEURL || "mongodb://localhost:27017/yelp_camp";
+mongoose.connect(url, { useNewUrlParser: true });
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
